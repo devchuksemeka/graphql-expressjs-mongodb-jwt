@@ -1,4 +1,3 @@
-const bcrypt = require("bcryptjs")
 const {JWT_SECRET_KEY} = require('../config/env')
 const jwt = require('jsonwebtoken');
 
@@ -10,7 +9,39 @@ const generateToken = async (payload) => {
     );
 }
 
+const decodeToken = (token) => jwt.verify(token, JWT_SECRET_KEY)
+
+const authorization = (req,res,next) => {
+    const authHeader = req.get("Authorization");
+    // console.log({req})
+    req.isAuth = false;
+    if(!authHeader){
+        return next();
+    }
+    
+    const token = authHeader.split(' ')[1];
+    if(!token || token === ''){
+        return next();
+    }
+    let decodedToken;
+    try{
+        decodedToken = decodeToken(token)
+    }catch(err){
+        return next();
+    }
+
+    if(!decodedToken){
+        return next();
+    }
+
+    req.isAuth = true;
+    req.user = decodedToken;
+    next();
+    
+
+}
 
 module.exports = {
-    generateToken
+    generateToken,
+    authorization
 }

@@ -32,7 +32,8 @@ const query = new GraphQLObjectType({
     fields: {
         users: {
             type: new GraphQLList(UserType),
-            async resolve(parentValue,args){
+            async resolve(parentValue,args, req){
+                if(!req.isAuth) throw new Error('Unauthorized request')
                 return await getUsersList()
             }
         },

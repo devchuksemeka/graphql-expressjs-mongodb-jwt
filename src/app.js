@@ -1,10 +1,14 @@
 const express = require('express')
 const {graphqlHTTP} = require('express-graphql')
 const mongoose = require('mongoose')
+const { authorization } = require('./middlewares/jwt')
 const UserModel = require('./models/User')
 const schema = require('./schemas')
 
 const app = express()
+
+// plug in an auth middleware
+app.use(authorization)
 
 app.use('/graphql/playground',graphqlHTTP({
     graphiql: true,
