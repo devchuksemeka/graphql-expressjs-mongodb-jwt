@@ -1,5 +1,5 @@
 const graphql = require('graphql')
-const {getUsersList, addUser} = require('../services/user.service')
+const {getUsersList, addUser, loginUser} = require('../services/user.service')
 const {
     GraphQLObjectType,
     GraphQLString,
@@ -19,6 +19,13 @@ const UserType = new GraphQLObjectType({
         email: { type: GraphQLString },
     })
 })
+const AuthType = new GraphQLObjectType({
+    name: 'Auth',
+    fields: () => ({
+        token: { type: GraphQLString },
+        user: { type: UserType },
+    })
+})
 
 const query = new GraphQLObjectType({
     name: 'RootQuery',
@@ -27,6 +34,16 @@ const query = new GraphQLObjectType({
             type: new GraphQLList(UserType),
             async resolve(parentValue,args){
                 return await getUsersList()
+            }
+        },
+        loginUser: {
+            type: AuthType,
+            args:{
+                email: {type:  new GraphQLNonNull(GraphQLString)},
+                password: {type:  new GraphQLNonNull(GraphQLString)},
+            },
+            async resolve(parentValue,args){
+                return await loginUser(args)
             }
         },
     }

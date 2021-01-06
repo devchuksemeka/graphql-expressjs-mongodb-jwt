@@ -27,9 +27,7 @@ userSchema.pre('save', function(done) {
         const hashed = getHashPassword(password);
         this.set('password', hashed);
     }
-    done(err=>{
-        console.log(err)
-    })
+    done()
 });
 const UserModel = mongoose.model('User',userSchema)
 module.exports = UserModel
